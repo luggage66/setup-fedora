@@ -1,6 +1,10 @@
 ---
 - name: INSTALL VSCod?
   hosts: localhost
+
+  vars_files:
+    - secrets.yaml
+
   tasks:
 
   - name: Add Microsoft Visual Studio Code Repo
@@ -17,3 +21,15 @@
     dnf:
       name: code
       state: latest
+
+  - git_config:
+      name: user.name
+      scope: global
+      value: "{{ full_name }}"
+    become: false
+
+  - git_config:
+      name: user.email
+      scope: global
+      value: "{{ email }}"
+    become: false
