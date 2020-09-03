@@ -1,0 +1,19 @@
+---
+- name: INSTALL VSCod?
+  hosts: localhost
+  tasks:
+
+  - name: Add Microsoft Visual Studio Code Repo
+    become: yes
+    yum_repository:
+      name: vscode
+      description: Visual Studio Code
+      baseurl: https://packages.microsoft.com/yumrepos/vscode
+      gpgcheck: yes
+      gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+
+  - name: Install/Update VSCode
+    become: yes
+    dnf:
+      name: code
+      state: latest
