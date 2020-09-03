@@ -1,5 +1,5 @@
 ---
-- name: INSTALL VSCod?
+- name: Developer Workstation Setup
   hosts: localhost
 
   vars_files:
@@ -16,10 +16,24 @@
       gpgcheck: yes
       gpgkey: https://packages.microsoft.com/keys/microsoft.asc
 
-  - name: Install/Update VSCode
+  - name: Enable RPM Fusion Repos
+    dnf:
+      name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ansible_distribution_major_version}}.noarch.rpm"
+      state: present
+    become: yes
+    when: ansible_distribution == 'Fedora'
+
+  - name: Install Packages
     become: yes
     dnf:
-      name: code
+      name:
+        - code
+        - discord
+        - nodejs
+        - golang
+        - jq
+        - vim-enhanced
+        - dotnet-sdk-3.1
       state: latest
 
   - git_config:
@@ -33,3 +47,40 @@
       scope: global
       value: "{{ email }}"
     become: false
+
+  - file:
+      path: "{{ ansible_user_dir }}/.local/bin"
+      state: directory
+    become: no
+
+  - get_url:
+      url: "https://github.com/uber/prototool/releases/download/v1.10.0/prototool-{{ ansible_system }}-{{ ansible_architecture }}"
+      dest: "{{ ansible_user_dir }}/.local/bin/prototool"
+      mode: 0755
+    become: no
+
+  - name: Increase max file watches to maximum allowed (for vscode)
+    become: yes
+    sysctl:
+      name: fs.inotify.max_user_watches
+      value: 524288
+      state: present
+
+  - name: copy developer_bash_profile.sh
+    become: no
+    copy:
+      src: developer_bash_profile.sh
+      dest: "{{ ansible_user_dir }}/developer_bash_profile.sh"
+
+  - name: Run Developer Bash Profile
+    become: no
+    blockinfile:
+      path: ~/.bashrc
+      backup: yes
+      state: present
+      block: |
+        # developer settings
+        if [ -f ~/developer_bash_profile.sh ]; then
+          . ~/developer_bash_profile.sh
+        fi
+      
