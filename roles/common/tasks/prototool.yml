@@ -1,0 +1,10 @@
+- file:
+    path: "{{ user_bin_directory }}"
+    state: directory
+  become: no
+
+- get_url:
+    url: "https://github.com/uber/prototool/releases/download/v1.10.0/prototool-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "{{ user_bin_directory }}/prototool"
+    mode: 0755
+  become: no

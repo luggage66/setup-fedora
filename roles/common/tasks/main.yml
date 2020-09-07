@@ -1,0 +1,39 @@
+# Minimially invasive bash_profile modification
+# * We put all our additions in a separate file, developer_bash_profile.sh
+# * Modify the user's existing bash_profile to insert our "include"
+
+- name: copy developer_bash_profile.sh
+  become: no
+  copy:
+    src: developer_bash_profile.sh
+    dest: "{{ ansible_user_dir }}/developer_bash_profile.sh"
+
+- name: Run Developer Bash Profile
+  become: no
+  blockinfile:
+    path: ~/.bashrc
+    backup: yes
+    state: present
+    block: |
+      # developer settings
+      if [ -f ~/developer_bash_profile.sh ]; then
+        . ~/developer_bash_profile.sh
+      fi
+
+- name: Install Packages
+  become: yes
+  dnf:
+    update_cache: yes
+    name:
+    - git
+    - nodejs
+    - golang
+    - jq
+    - vim-enhanced
+    - dotnet-sdk-3.1
+    state: latest
+
+- import_tasks: git-config.yml
+- import_tasks: prototool.yml
+- import_tasks: grpc-gateway.yml
+

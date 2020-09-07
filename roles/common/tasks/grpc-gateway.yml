@@ -1,0 +1,13 @@
+- git:
+    repo: https://github.com/AmTote/grpc-gateway.git
+    dest: "{{ ansible_user_dir }}/tsg/grpc-gateway"
+    update: no
+
+- stat:
+    path: "{{ go_bin_directory }}/protoc-gen-grpc-gateway"
+  register: gatewaybin
+
+- shell:
+    chdir: "{{ ansible_user_dir }}/tsg/grpc-gateway"
+    cmd: "go mod download && go install ./protoc-gen-grpc-gateway && go install ./protoc-gen-swagger"
+  when: gatewaybin.exists is not defined

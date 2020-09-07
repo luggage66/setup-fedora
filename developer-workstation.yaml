@@ -1,0 +1,14 @@
+---
+- name: Developer Workstation Setup
+  hosts: localhost
+
+  vars:
+    user_bin_directory: "{{ ansible_user_dir }}/.local/bin"
+    go_bin_directory: "{{ ansible_user_dir }}/go/bin"
+
+  vars_files:
+    - secrets.yaml
+
+  roles:
+  - common
+  - vscode
