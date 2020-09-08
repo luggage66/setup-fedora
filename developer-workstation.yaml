@@ -5,6 +5,7 @@
   vars:
     user_bin_directory: "{{ ansible_user_dir }}/.local/bin"
     go_bin_directory: "{{ ansible_user_dir }}/go/bin"
+    protoc_gen_grpc_web_version: "1.0.4"
 
   vars_files:
     - secrets.yaml

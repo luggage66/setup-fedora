@@ -1,0 +1,34 @@
+- file:
+    path: "{{ user_bin_directory }}"
+    state: directory
+  become: no
+
+- name: Install prototool
+  get_url:
+    url: "https://github.com/uber/prototool/releases/download/v1.10.0/prototool-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "{{ user_bin_directory }}/prototool"
+    mode: 0755
+  become: no
+
+- name: Install protoc-gen-grpc-web
+  get_url:
+    url: "https://github.com/grpc/grpc-web/releases/download/{{ protoc_gen_grpc_web_version }}/protoc-gen-grpc-web-{{ protoc_gen_grpc_web_version }}-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "{{ user_bin_directory }}/protoc-gen-grpc-web"
+    mode: 0755
+  become: no
+
+- name: Clone AmTote/grpc-gateway
+  git:
+    repo: https://github.com/AmTote/grpc-gateway.git
+    dest: "{{ ansible_user_dir }}/tsg/grpc-gateway"
+    update: no
+
+- stat:
+    path: "{{ go_bin_directory }}/protoc-gen-grpc-gateway"
+  register: gatewaybin
+
+- name: Install protoc-gen-grpc-gateway
+  shell:
+    chdir: "{{ ansible_user_dir }}/tsg/grpc-gateway"
+    cmd: "go mod download && go install ./protoc-gen-grpc-gateway && go install ./protoc-gen-swagger"
+  when: gatewaybin.exists is not defined

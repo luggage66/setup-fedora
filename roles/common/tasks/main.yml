@@ -34,6 +34,5 @@
     state: latest
 
 - import_tasks: git-config.yml
-- import_tasks: prototool.yml
-- import_tasks: grpc-gateway.yml
+- import_tasks: proto.yml
 
